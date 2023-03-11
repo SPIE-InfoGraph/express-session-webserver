@@ -117,8 +117,12 @@ MemoryStore.prototype.get = function get(sessionId, callback) {
  */
 
 MemoryStore.prototype.set = function set(sessionId, session, callback) {
-  this.sessions[sessionId] = JSON.stringify(session)
-  callback && defer(callback)
+  if (session.readonly && this.sessions[sessionId]){
+    callback && defer(callback, null);
+  }else{
+    this.sessions[sessionId] = JSON.stringify(session)
+    callback && defer(callback);
+  }
 }
 
 /**
