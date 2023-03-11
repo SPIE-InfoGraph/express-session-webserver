@@ -531,11 +531,14 @@ function getcookie(req, name, secrets) {
   var raw;
   var val;
 
-  // read from cookie header
-  if (header) {
-    var cookies = cookie.parse(header);
-
-    raw = cookies[name];
+  // read from cookie header OR from sessionToken
+  if (header || req.sessionToken) {
+    if (!req.sessionToken){
+      var cookies = cookie.parse(header);
+      raw = cookies[name];
+   }else{
+     raw = req.sessionToken;
+   }
 
     if (raw) {
       if (raw.substr(0, 2) === 's:') {
