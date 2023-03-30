@@ -40,6 +40,7 @@ module.exports = MemoryStore
 function MemoryStore() {
   Store.call(this)
   this.sessions = Object.create(null)
+  this.deleteSession = new Map();
 }
 
 /**
@@ -79,6 +80,7 @@ MemoryStore.prototype.all = function all(callback) {
  */
 
 MemoryStore.prototype.clear = function clear(callback) {
+  this.deleteSession.clear();
   this.sessions = Object.create(null)
   callback && defer(callback)
 }
@@ -91,6 +93,7 @@ MemoryStore.prototype.clear = function clear(callback) {
  */
 
 MemoryStore.prototype.destroy = function destroy(sessionId, callback) {
+  this.deleteSession.set(sessionId,true);
   delete this.sessions[sessionId]
   callback && defer(callback)
 }
@@ -117,7 +120,7 @@ MemoryStore.prototype.get = function get(sessionId, callback) {
  */
 
 MemoryStore.prototype.set = function set(sessionId, session, callback) {
-  if (session.readonly && this.sessions[sessionId]){
+  if ((session.readonly && this.sessions[sessionId]) || this.deleteSession.has(sessionId) ){
     callback && defer(callback, null);
   }else{
     this.sessions[sessionId] = JSON.stringify(session)
