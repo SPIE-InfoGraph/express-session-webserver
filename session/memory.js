@@ -123,6 +123,7 @@ MemoryStore.prototype.set = function set(sessionId, session, callback) {
   if ((session.readonly && this.sessions[sessionId]) || this.deleteSession.has(sessionId) ){
     callback && defer(callback, null);
   }else{
+    delete session?.readonly;
     this.sessions[sessionId] = JSON.stringify(session)
     callback && defer(callback);
   }
